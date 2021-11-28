@@ -258,24 +258,8 @@ namespace custom {
         startNextLevel()   
     }
 
-    function throwWaterBall(direction: WaterballDirection) {
-        if (controller.up.isPressed() || controller.down.isPressed() ||
-            controller.right.isPressed() || controller.left.isPressed() ||
-            moving) {
-            playerSprite.sayText("需要站着不动才能洒水", 1000)
-            return
-        }
-
-        if (currentDirection != direction) {
-            playerSprite.sayText("我只能向正前方洒水", 1000)
-            return
-        }
-
-        let waterballSprite: Sprite = null
-
-        switch (direction) {
-            case WaterballDirection.DOWN:
-                waterballSprite = sprites.createProjectileFromSprite(img`
+    function createWaterball(direction:WaterballDirection) {
+        let waterballSprite = sprites.create(img`
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
@@ -292,65 +276,36 @@ namespace custom {
                     . . . . . . 9 9 9 9 . . . . . .
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
-                `, playerSprite, 0, 80);
-                break;
-            case WaterballDirection.UP: waterballSprite = sprites.createProjectileFromSprite(img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . 9 9 . . . . . . .
-                . . . . . . 9 9 9 9 . . . . . .
-                . . . . . 9 9 1 9 9 9 . . . . .
-                . . . . 9 9 1 1 9 9 9 9 . . . .
-                . . . 9 9 1 1 9 9 9 9 9 9 . . .
-                . . . 9 1 1 9 9 9 9 9 9 9 . . .
-                . . . 9 9 9 9 9 9 9 9 9 9 . . .
-                . . . 9 9 9 9 9 9 9 9 9 9 . . .
-                . . . . 9 9 9 9 9 9 9 9 . . . .
-                . . . . . 9 9 9 9 9 9 . . . . .
-                . . . . . . 9 9 9 9 . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-            `, playerSprite, 0, -80); break;
-            case WaterballDirection.RIGHT: waterballSprite = sprites.createProjectileFromSprite(img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . 9 9 . . . . . . .
-                . . . . . . 9 9 9 9 . . . . . .
-                . . . . . 9 9 1 9 9 9 . . . . .
-                . . . . 9 9 1 1 9 9 9 9 . . . .
-                . . . 9 9 1 1 9 9 9 9 9 9 . . .
-                . . . 9 1 1 9 9 9 9 9 9 9 . . .
-                . . . 9 9 9 9 9 9 9 9 9 9 . . .
-                . . . 9 9 9 9 9 9 9 9 9 9 . . .
-                . . . . 9 9 9 9 9 9 9 9 . . . .
-                . . . . . 9 9 9 9 9 9 . . . . .
-                . . . . . . 9 9 9 9 . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-            `, playerSprite, 80, 0); break;
-            case WaterballDirection.LEFT: waterballSprite = sprites.createProjectileFromSprite(img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . 9 9 . . . . . . .
-                . . . . . . 9 9 9 9 . . . . . .
-                . . . . . 9 9 1 9 9 9 . . . . .
-                . . . . 9 9 1 1 9 9 9 9 . . . .
-                . . . 9 9 1 1 9 9 9 9 9 9 . . .
-                . . . 9 1 1 9 9 9 9 9 9 9 . . .
-                . . . 9 9 9 9 9 9 9 9 9 9 . . .
-                . . . 9 9 9 9 9 9 9 9 9 9 . . .
-                . . . . 9 9 9 9 9 9 9 9 . . . .
-                . . . . . 9 9 9 9 9 9 . . . . .
-                . . . . . . 9 9 9 9 . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-            `, playerSprite, -80, 0); break;
+                `, SPRITE_KIND_WATER_BALL)
+        waterballSprite.x = playerSprite.x 
+        waterballSprite.y = playerSprite.y
+        waterballSprite.setFlag(SpriteFlag.AutoDestroy, true)
+        waterballSprite.setFlag(SpriteFlag.DestroyOnWall, true)
+        if (direction == WaterballDirection.UP) {
+            waterballSprite.vy = -80
+        } else if (direction == WaterballDirection.RIGHT) {
+            waterballSprite.vx = 80
+        } else if (direction == WaterballDirection.DOWN) {
+            waterballSprite.vy = 80
+        } else {
+            waterballSprite.vx = -80
+        }
+    }
+
+    function throwWaterBall(direction: WaterballDirection) {
+        if (controller.up.isPressed() || controller.down.isPressed() ||
+            controller.right.isPressed() || controller.left.isPressed() ||
+            moving) {
+            playerSprite.sayText("需要站着不动才能洒水", 1000)
+            return
         }
 
-        waterballSprite.setKind(SPRITE_KIND_WATER_BALL)
+        if (currentDirection != direction) {
+            game.splash("只能向正前方洒水")
+            restartLevel()
+            return
+        }
+        createWaterball(direction)
     }
 
 }
