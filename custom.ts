@@ -48,28 +48,26 @@ namespace custom {
         eventsBound = true
     }
 
-
-
     //%blockid=customthrowwaterballup block="往上洒水"
-    //%group="Skill"
+    //%group="洒水"
     export function throwWaterballUp() {
         throwWaterBall(WaterballDirection.UP)
     }
 
     //%blockid=customthrowwaterballdown block="往下洒水"
-    //%group="Skill"
+    //%group="洒水"
     export function throwWaterballDown() {
         throwWaterBall(WaterballDirection.DOWN)
     }
 
     //%blockid=customthrowwaterballright block="往右洒水"
-    //%group="Skill"
+    //%group="洒水"
     export function throwWaterballRight() {
         throwWaterBall(WaterballDirection.RIGHT)
     }
 
     //%blockid=customthrowwaterballleft block="往左洒水"
-    //%group="Skill"
+    //%group="洒水"
     export function throwWaterballLeft() {
         throwWaterBall(WaterballDirection.LEFT)
     }
@@ -230,6 +228,9 @@ namespace custom {
     }
 
     function startNextLevel() {
+        for (let waterSprite of sprites.allOfKind(SPRITE_KIND_WATER_BALL)) {
+            waterSprite.destroy()
+        }
         currentLevel += 1
         if (currentLevel == levels.length) {
             game.over(true)
@@ -250,6 +251,7 @@ namespace custom {
     }
 
     //%blockid=customprepareleveli block="开始灭火行动"
+    //%group="故事开始"
     export function prepareLevelI() {
         setupLevelTilemaps()
         bindEvents()
